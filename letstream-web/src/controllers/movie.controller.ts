@@ -9,6 +9,7 @@ import {
   Like,
 } from "typeorm";
 import { Movie } from "../entities/Movie";
+import advancedResults from "../middleware/advancedResults";
 
 const modifyMovieResult = (data: Movie[] | Movie) => {
   if (Array.isArray(data)) {
@@ -26,42 +27,9 @@ const modifyMovieResult = (data: Movie[] | Movie) => {
 
 const getMovies = async (req: Request, res: Response) => {
   try {
-    const page: number = req.query.page && parseInt(req.query.page as string);
-    const pageSize =
-      (req.query.pageSize && parseInt(req.query.pageSize as string)) || 10;
+    const queryParams: any = advancedResults(req);
+    console.log({ queryParams });
     const moviesCount = await Movie.count();
-    let queryParams: any = {};
-
-    queryParams.take = pageSize;
-    queryParams.skip = pageSize * (page - 1);
-    queryParams.conditions = {};
-    queryParams.order = {};
-    queryParams.where = {};
-    const conditionFields = {
-      $eq$: Equal,
-      $lt$: LessThan,
-      $gt$: MoreThan,
-      $lte$: LessThanOrEqual,
-      $gte$: MoreThanOrEqual,
-      $like$: Like,
-    };
-    if (req.query.conditions) {
-      let test: any = {};
-      const conditions = req.query.conditions as string;
-      conditions.split(",").forEach((condition) => {
-        Object.keys(conditionFields).forEach((conditionKey) => {
-          if (condition.includes(conditionKey)) {
-            const [key, value] = condition.split(conditionKey);
-            queryParams.where[key] = conditionFields[conditionKey](value);
-          }
-        });
-      });
-    }
-
-    if (req.query.viewsOrder) {
-      queryParams.order.views = req.query.viewsOrder;
-    }
-
     const movies = await Movie.find(queryParams);
     return res.status(200).json({
       movies: modifyMovieResult(movies),
