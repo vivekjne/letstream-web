@@ -11,6 +11,7 @@ import { classToPlain, Exclude } from "class-transformer";
 
 import Entity from "./Entity";
 import { Movie } from "./Movie";
+import { Serial } from "./Serial";
 
 @TOEntity("languages")
 export class Language extends Entity {
@@ -23,4 +24,7 @@ export class Language extends Entity {
 
   @OneToMany((type) => Movie, (movie) => movie.language)
   movies: Movie[];
+
+  @OneToMany((type) => Serial, (serial) => serial.language)
+  series: Serial[];
 }
