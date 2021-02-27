@@ -5,6 +5,7 @@ import {
   Index,
   BeforeInsert,
   OneToMany,
+  BeforeUpdate,
 } from "typeorm";
 import bcrypt from "bcrypt";
 import { classToPlain, Exclude } from "class-transformer";
@@ -19,7 +20,9 @@ export class Language extends Entity {
     super();
     Object.assign(this, language);
   }
-  @Column()
+
+  @Index()
+  @Column({ unique: true })
   title: string;
 
   @OneToMany((type) => Movie, (movie) => movie.language)
@@ -27,4 +30,10 @@ export class Language extends Entity {
 
   @OneToMany((type) => Serial, (serial) => serial.language)
   series: Serial[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async lowerCasePassword() {
+    this.title = this.title.toLowerCase().trim();
+  }
 }
