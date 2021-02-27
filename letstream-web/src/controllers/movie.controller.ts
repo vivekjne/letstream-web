@@ -28,7 +28,6 @@ const modifyMovieResult = (data: Movie[] | Movie) => {
 const getMovies = async (req: Request, res: Response) => {
   try {
     const queryParams: any = advancedResults(req);
-    console.log({ queryParams });
     const moviesCount = await Movie.count();
     const movies = await Movie.find(queryParams);
     return res.status(200).json({

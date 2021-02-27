@@ -6,9 +6,11 @@ import {
   Equal,
   LessThanOrEqual,
   Like,
+  In,
 } from "typeorm";
 
 export default (req: Request) => {
+  //   console.log({ query: req.query });
   // pagination current page
   const page: number = req.query.page && parseInt(req.query.page as string);
 
@@ -30,6 +32,7 @@ export default (req: Request) => {
     $lte$: LessThanOrEqual,
     $gte$: MoreThanOrEqual,
     $like$: Like,
+    $in$: In,
   };
   if (req.query.conditions) {
     const conditions = req.query.conditions as string;
@@ -37,7 +40,13 @@ export default (req: Request) => {
       Object.keys(conditionFields).forEach((conditionKey) => {
         if (condition.includes(conditionKey)) {
           const [key, value] = condition.split(conditionKey);
-          queryParams.where[key] = conditionFields[conditionKey](value);
+          if (conditionKey === "$in$") {
+            queryParams.where[key] = conditionFields[conditionKey](
+              value.split("-")
+            );
+          } else {
+            queryParams.where[key] = conditionFields[conditionKey](value);
+          }
         }
       });
     });
