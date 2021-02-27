@@ -8,6 +8,7 @@ dotenv.config();
 
 import authRoutes from "./routes/auth";
 import languageRoutes from "./routes/language.route";
+import movieRoutes from "./routes/movie.route";
 
 import trim from "./middleware/trim";
 const app = express();
@@ -20,6 +21,7 @@ app.use(cookieParser());
 app.get("/", (req, res) => res.send("Hello"));
 app.use("/api/auth", authRoutes);
 app.use("/api/languages", languageRoutes);
+app.use("/api/movies", movieRoutes);
 
 app.listen(5000, async () => {
   console.log("Server running at http://localhost:5000");

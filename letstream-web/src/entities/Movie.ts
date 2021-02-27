@@ -29,7 +29,9 @@ export class Movie extends Entity {
   @Column({ type: "text" })
   description: string;
 
-  @ManyToOne((type) => Language, (language) => language.movies)
+  @ManyToOne((type) => Language, (language) => language.movies, {
+    eager: true,
+  })
   language: Language;
 
   @Column({ default: 0 })
